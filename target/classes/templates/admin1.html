@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Admin page</title>
+</head>
+<body>
+<!--Верхняя панель-->
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1"
+              th:text="${user.getEmail()} + '  with role:  ' + ${user.roles}">
+        </span>
+        <a class="nav-link active" aria-current="page" href="/logout">Logout</a>
+    </div>
+</nav>
+<div class="d-flex align-items-start">
+    <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical"
+         style="width: 15%">
+        <a class="nav-link active" id="v-pills-user-tab" data-bs-toggle="pill" href="/user" role="tab"
+           aria-controls="v-pills-user" aria-selected="true">User</a>
+        <a class="nav-link active" id="v-pills-admin-tab" data-bs-toggle="pill" href="/admin" role="tab"
+           aria-controls="v-pills-admin" aria-selected="true">Admin</a>
+    </div>
+</div>
+<div class="tab-content" id="v-pills-tabContent">
+    <div class="tab-pane fade" id="v-pills-admin" role="tabpanel" aria-labelledby="v-pills-admin-tab">
+        <nav class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" href="#nav-home" role="tab"
+               aria-controls="nav-home" aria-selected="true">Home</a>
+            <a class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" href="#nav-profile" role="tab"
+               aria-controls="nav-profile" aria-selected="false">Profile</a>
+        </nav>
+        <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                <table class="table table-hover" style="width:50%">
+                    <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Имя</th>
+                        <th>Фамилия</th>
+                        <th>Возраст</th>
+                        <th>E-mail</th>
+                        <th>Role</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.getId()}">Id</td>
+                        <td th:text="${user.getFirstName()}">Имя</td>
+                        <td th:text="${user.getLastName()}">Фамилия</td>
+                        <td th:text="${user.getAge()}">Возраст</td>
+                        <td th:text="${user.getEmail()}">E-mail</td>
+                        <td th:text="${user.getRoles()}">Role</td>
+                        <td>
+                            <button class="btn btn-warning" data-bs-toggle="modal"
+                                    th:data-bs-target="${'#eMdl'+ user.id}"
+                                    th:data-row="${user}">Edit
+                            </button>
+                            <div class="modal" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="modalBasicLabel">Edit User</h5>
+                                            <button type="button" class="btn-close" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">...</div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary">Close</button>
+                                            <button type="button" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <!--                              Delete-->
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+            <form th:method="POST" th:action="@{/admin/add}" th:object="${user}">
+                <label th:name="name">Введите имя</label>
+                <input type="text" th:field="*{firstName}" id="firstName"/>
+                <b style="color:red" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}">val</b>
+                <br>
+                <label th:name="lastname">Введите Фамилию</label>
+                <input type="text" th:field="*{lastName}" id="lastName"/>
+                <b style="color:red" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">val</b>
+                <br>
+                <label th:name="age">Введите возраст</label>
+                <input type="text" th:field="*{age}" id="age"/>
+                <b style="color:red" th:if="${#fields.hasErrors('age')}" th:errors="*{age}">val</b>
+                <br>
+                <label th:name="email">Введите email(Это ваш логин)</label>
+                <input type="text" th:field="*{email}" id="email"/>
+                <b style="color:red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">val</b>
+                <br>
+                <label th:name="password">Введите пароль</label>
+                <input type="text" th:field="*{password}" id="password"/>
+                <b style="color:red" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">val</b>
+                <br>
+                <label th:name="role">Выберети роль</label>
+                <input type="checkbox" name="roles"
+                       th:each="newrole : ${roles}"
+                       th:text="${newrole.getRole()}"
+                       th:value="${newrole.getId()}"
+                       th:field="*{roles}"/>
+                <br>
+                <input type="submit" value="Add">
+            </form>
+        </div>
+    </div>
+</div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+</body>
+</html>
